@@ -9,6 +9,12 @@ namespace :resque do
     scheduler = Rufus::Scheduler.start_new
 
     Honduras::ResqueSchedule.start(scheduler, schedule)
+
+    scheduler.every('5s') do
+      print '.'
+      Resque.enqueue_delayed_tasks
+    end
+
     sleep
   end
 end
