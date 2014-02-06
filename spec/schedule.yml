@@ -1,0 +1,18 @@
+queue_worker_cleanup:
+  cron: "*/20 * * * *"
+  class: WorkerReserver
+  queue: reserve_workers
+  args: cleanup
+  description: This task cleans up zombie and dead workers. Also requeues dirty exit failures.
+queue_worker_reserver:
+  cron: "*/20 * * * *"
+  class: WorkerReserver
+  queue: reserve_workers
+  args: reserve
+  description: This task checks how many workers are needed to get things done in a configured amount of time.
+queue_missing_cached_items_scanner:
+  cron: "0 */3 * * *"
+  class: MissingCachedItemsScanner
+  queue: reserve_workers
+  args:
+  description: This task scans submits recovery requests for missing cache items.
