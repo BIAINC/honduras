@@ -15,6 +15,6 @@ namespace :resque do
       Resque.enqueue_delayed_tasks
     end
 
-    sleep
+    scheduler.join
   end
 end
