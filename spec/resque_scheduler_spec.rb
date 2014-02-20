@@ -14,6 +14,7 @@ describe Honduras::ResqueSchedule do
 
     before(:each) do
       Resque.stub(:push)
+      Honduras::ResqueSchedule.stub(:log).and_return(Logger.new("/dev/null"))
     end
 
     def mock_scheduler
@@ -52,6 +53,22 @@ describe Honduras::ResqueSchedule do
       Resque.should_receive(:push).with(expected_queues[0], expected_items[0]).with(expected_queues[1], expected_items[1]).with(expected_queues[2], expected_items[2])
 
       Honduras::ResqueSchedule.start(scheduler, schedule)
+    end
+  end
+
+  context "logger" do
+    before(:each) do
+      Honduras::ResqueSchedule.log = nil
+    end
+
+    it "should have a default logger" do
+      Honduras::ResqueSchedule.log.should_not be_nil
+    end
+
+    it "should override default logger" do
+      expected = Logger.new(STDERR)
+      Honduras::ResqueSchedule.log = expected
+      Honduras::ResqueSchedule.log.should eql(expected)
     end
   end
 end
