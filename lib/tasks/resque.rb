@@ -3,15 +3,19 @@ require 'yaml'
 require 'honduras'
 
 namespace :resque do
-  task :scheduler, :schedule_file do |_, args|
-    puts "Loading resque schedule from #{args.schedule_file}"
+  task :scheduler, :schedule_file, :log_level do |_, args|
+    log_level = args.log_level || Logger::INFO
+    log = Logger.new(STDOUT)
+    log.log_level = log_level
+    Honduras::ResqueSchedule.log = log
+
+    log.info "Loading resque schedule from #{args.schedule_file}"
     schedule = YAML.load_file(args.schedule_file)
     scheduler = Rufus::Scheduler.start_new
 
     Honduras::ResqueSchedule.start(scheduler, schedule)
 
     scheduler.every('5s') do
-      print '.'
       Resque.enqueue_delayed_tasks
     end
 
