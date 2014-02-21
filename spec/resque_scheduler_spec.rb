@@ -47,6 +47,7 @@ describe Honduras::ResqueSchedule do
         item = item.clone
         item.delete('cron')
         item.delete('queue')
+        item['args'] = Array(item['args'])
         item
       end
 

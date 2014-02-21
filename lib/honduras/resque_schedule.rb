@@ -14,6 +14,7 @@ module Honduras
         cron = item.delete('cron')
         queue = item.delete('queue')
         klass = item['class']
+        item["args"] = Array(item["args"])
 
         rufus_scheduler.cron(cron) do
           log.info "Queueing #{item} into #{queue}"
