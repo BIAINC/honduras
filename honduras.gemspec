@@ -22,7 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "simplecov"
-  spec.add_development_dependency "uuid"
 
   spec.add_runtime_dependency "redis"
   spec.add_runtime_dependency "resque"
