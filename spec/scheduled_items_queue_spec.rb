@@ -24,10 +24,8 @@ describe Honduras::ScheduledItemsQueue do
     end
 
     def mock_redis
-      r = double('redis')
-      r.stub(:lrange)
+      r = double("redis")
       r.stub(:ltrim)
-      r.stub(:rpush)
       r
     end
 
