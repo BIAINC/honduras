@@ -2,7 +2,7 @@ require 'json'
 
 module Honduras
   module ScheduledItemsQueue
-    DELAYED_TASKS_KEY = 'delayed_tasks'
+    DELAYED_TASKS_KEY = 'resque:delayed_tasks'
 
     class << self
       def enqueue(timestamp, klass, *args)
@@ -22,7 +22,7 @@ module Honduras
       private
 
       def redis
-        Resque.redis
+        Resque.redis.redis
       end
 
       def send_to_queue(item)

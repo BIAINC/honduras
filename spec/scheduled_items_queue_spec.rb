@@ -20,7 +20,7 @@ describe Honduras::ScheduledItemsQueue do
     let(:serialized_item) { normal_item.to_json }
 
     before(:each) do
-      Resque.stub(:redis).and_return(redis)
+      Resque.redis.stub(:redis).and_return(redis)
     end
 
     def mock_redis

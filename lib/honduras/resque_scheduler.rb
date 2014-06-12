@@ -11,7 +11,7 @@ module Honduras
     end
 
     def delayed_tasks
-      @delayed_tasks ||= TasksStorage.new(Resque.redis.redis, Honduras::DELAYED_TASKS_KEY)
+      @delayed_tasks ||= TasksStorage.new(redis, Honduras::DELAYED_TASKS_KEY)
     end
 
     def start(rufus_scheduler, schedule)
@@ -19,7 +19,22 @@ module Honduras
       schedule_cron_tasks(rufus_scheduler, schedule)
     end
 
+    def stats
+      data = redis.multi do
+        redis.llen(Honduras::ScheduledItemsQueue::DELAYED_TASKS_KEY)
+        redis.hlen(Honduras::DELAYED_TASKS_KEY)
+      end.map{|v| v.to_i}
+
+      data = [:active, :pending].zip(data).flatten
+      data = Hash[*data]
+      OpenStruct.new(data).freeze
+    end
+
     private
+
+    def redis
+      Resque.redis.redis
+    end
 
     def schedule_delayed_tasks(rufus_scheduler)
       delayed_tasks.each_task(true) do |task|
