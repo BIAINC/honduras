@@ -1,6 +1,6 @@
 # Honduras
 
-TODO: Write a gem description
+Hondurars is a Rufus-based resque scheduler.
 
 ## Installation
 
@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Add Honduras gem to your project, and it will add enqueue_in and enqueue_at methods to Resque.
 
 ## Contributing
 
