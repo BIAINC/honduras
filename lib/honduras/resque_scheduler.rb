@@ -40,6 +40,7 @@ module Honduras
       delayed_tasks.each_task(true) do |task|
         queue = task.delete('queue')
         timestamp = task.delete('timestamp')
+        task["__source"] = "honduras"
 
         rufus_scheduler.at(timestamp) do
           log.info{"Queueing delayed task #{task} into #{queue}"}
