@@ -7,13 +7,13 @@ namespace :resque do
     log_level = args.log_level || Logger::INFO
     log = Logger.new(STDOUT)
     log.log_level = log_level
-    Honduras::ResqueSchedule.log = log
+    Honduras::ResqueScheduler.log = log
 
-    log.info "Loading resque schedule from #{args.schedule_file}"
+    log.info{"Loading resque schedule from #{args.schedule_file}"}
     schedule = YAML.load_file(args.schedule_file)
     scheduler = Rufus::Scheduler.start_new
 
-    Honduras::ResqueSchedule.start(scheduler, schedule)
+    Honduras::ResqueScheduler.start(scheduler, schedule)
 
     scheduler.every('5s') do
       Resque.enqueue_delayed_tasks

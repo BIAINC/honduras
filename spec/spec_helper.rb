@@ -4,5 +4,5 @@ SimpleCov.start do
 end
 
 require "honduras"
-require 'uuid'
+require 'securerandom'
 require_relative "test_task"

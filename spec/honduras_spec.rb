@@ -43,11 +43,15 @@ describe Honduras do
   context '::enqueue_delayed_tasks' do
     let(:core_task) { {"class" => 'test_class'} }
     let(:scheduled_task) { {"class" => "test_class", "queue" => resque_queue, "timestamp" => timestamp}}
-    let(:resque_queue) { UUID.generate.to_s }
+    let(:resque_queue) { SecureRandom.uuid.to_s }
     let(:timestamp) { Time.now + rand(-10..10) }
 
     before(:each) do
       queue.stub(:fetch_all).and_yield([scheduled_task])
+      Resque.stub(:push)
+      Resque.delayed_tasks_storage.stub(:add).and_return(SecureRandom.uuid)
+      Resque.delayed_tasks_storage.stub(:fetch).and_yield(scheduled_task)
+      scheduler.stub(:at).and_yield
     end
 
     it 'should schedule a task' do
@@ -59,6 +63,18 @@ describe Honduras do
     it 'should enqueue Resque task' do
       scheduler.stub(:at).and_yield
       Resque.should_receive(:push).with(resque_queue, core_task)
+
+      Resque.enqueue_delayed_tasks
+    end
+
+    it 'should store tasks in the delayed tasks storage' do
+      Resque.delayed_tasks_storage.should_receive(:add).with(scheduled_task)
+
+      Resque.enqueue_delayed_tasks
+    end
+
+    it 'should fetch task from the delayed tasks storage' do
+      Resque.delayed_tasks_storage.should_receive(:fetch).exactly(1).times.and_yield(scheduled_task)
 
       Resque.enqueue_delayed_tasks
     end
