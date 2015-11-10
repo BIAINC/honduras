@@ -47,7 +47,7 @@ describe Honduras do
     let(:timestamp) { Time.now + rand(-10..10) }
 
     before(:each) do
-      queue.stub(:fetch_all).and_yield([scheduled_task])
+      queue.stub(:fetch).and_yield([scheduled_task])
       Resque.stub(:push)
       Resque.delayed_tasks_storage.stub(:add).and_return(SecureRandom.uuid)
       Resque.delayed_tasks_storage.stub(:fetch).and_yield(scheduled_task)

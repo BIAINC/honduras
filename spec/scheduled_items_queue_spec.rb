@@ -6,7 +6,7 @@ describe Honduras::ScheduledItemsQueue do
     let(:subject) { Honduras::ScheduledItemsQueue }
 
     it { should respond_to(:enqueue) }
-    it { should respond_to(:fetch_all) }
+    it { should respond_to(:fetch) }
   end
 
   context 'functionality' do
@@ -37,23 +37,48 @@ describe Honduras::ScheduledItemsQueue do
       end
     end
 
-    context "::fetch_all" do
+    context "::fetch" do
       let(:expected_redis_items) { [serialized_item] }
 
       before(:each) do
         redis.stub(:lrange).and_return(expected_redis_items)
       end
 
-      it "should obtain serialized items from Redis" do
-        redis.should_receive(:lrange).with(queue::DELAYED_TASKS_KEY, 0, -1).and_return([serialized_item])
+      context "with default count" do
+        it "obtains all items from redis" do
+          expect(redis).to receive(:lrange).once.with(queue::DELAYED_TASKS_KEY, 0, -1).and_return([serialized_item])
 
-        queue.fetch_all{}
+          queue.fetch{}
+        end
+
+        it "deletes exact number of items from redis" do
+          expect(redis).to receive(:ltrim).once.with(queue::DELAYED_TASKS_KEY, 1, -1)
+
+          queue.fetch{}
+        end
+
+        it "yields control" do
+          expect{|b| queue.fetch(&b)}.to yield_with_args([normal_item])
+        end
       end
 
-      it "should pass deserialized items to thecode block" do
-        expect{|b| queue.fetch_all(&b)}.to yield_with_args([normal_item])
-      end
+      context "with explicit count" do
+        it "obtains given number of items from redis" do
+          expect(redis).to receive(:lrange).once.with(queue::DELAYED_TASKS_KEY, 0, 99).and_return([serialized_item])
 
+          queue.fetch(100){}
+        end
+
+        it "deletes exact number of items from redis" do
+          expect(redis).to receive(:ltrim).once.with(queue::DELAYED_TASKS_KEY, 1, -1)
+
+          queue.fetch(100){}
+        end
+
+        it "yields control" do
+          expect{|b| queue.fetch(100, &b)}.to yield_with_args([normal_item])
+        end
+      end
     end
   end
 end
