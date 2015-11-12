@@ -19,7 +19,7 @@ module Honduras
   end
 
   def enqueue_delayed_tasks
-    ScheduledItemsQueue.fetch_all do |tasks|
+    ScheduledItemsQueue.fetch(500) do |tasks|
       tasks.each do |task|
         schedule_delayed_task(task)
       end
